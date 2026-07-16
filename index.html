@@ -1,0 +1,851 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b4f8a">
+  <title>UJ Math Quest</title>
+  <style>
+    :root {
+      --font-size-base: 16px;
+      --background: #f4faff; --foreground: #10233c;
+      --card: #ffffff; --card-foreground: #10233c;
+      --primary: #0b4f8a; --primary-foreground: #ffffff;
+      --secondary: #e1f1ff; --secondary-foreground: #123b60;
+      --muted: #edf4f8; --muted-foreground: #536779;
+      --accent: #dff5ff; --accent-foreground: #143f62;
+      --destructive: #c83245; --border: #c7d8e6;
+      --input: #9db7ca; --ring: #18aeea;
+      --viz-series-1: #18aeea;
+    }
+    body { margin: 0; padding: 20px; background: var(--background); color: var(--foreground); }
+    .site-wrap { max-width: 1120px; margin: 0 auto; }
+    @media (max-width: 620px) { body { padding: 10px; } }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: #071625; --foreground: #eef8ff;
+        --card: #0e2438; --card-foreground: #eef8ff;
+        --primary: #44bdf0; --primary-foreground: #062033;
+        --secondary: #183b55; --secondary-foreground: #eef8ff;
+        --muted: #152d40; --muted-foreground: #b7cad8;
+        --accent: #143c58; --accent-foreground: #eef8ff;
+        --destructive: #ff7687; --border: #31516a;
+        --input: #53738c; --ring: #44bdf0; --viz-series-1: #44bdf0;
+      }
+    }
+  </style>
+</head>
+<body>
+<main class="site-wrap">
+<div id="imso-game" data-app="UJ Math Quest">
+  <style>
+    #imso-game { color: var(--foreground); font-family: system-ui, sans-serif; }
+    #imso-game * { box-sizing: border-box; }
+    #imso-game .shell { display: grid; gap: 16px; }
+    #imso-game .hero { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+    #imso-game .brand { display: flex; align-items: center; gap: 12px; }
+    #imso-game .logo { width: 58px; height: 58px; border-radius: 50%; overflow: hidden; border: 3px solid var(--primary); background: var(--accent); flex: 0 0 auto; }
+    #imso-game .logo img { width: 100%; height: 100%; display: block; object-fit: cover; }
+    #imso-game .hero h2, #imso-game .hero p, #imso-game .panel h3, #imso-game .panel p { margin: 0; }
+    #imso-game .nav { display: flex; flex-wrap: wrap; gap: 8px; }
+    #imso-game .panel { border: 1px solid var(--border); border-radius: 14px; background: var(--card); color: var(--card-foreground); padding: 18px; display: grid; gap: 16px; }
+    #imso-game .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    #imso-game .stat { border: 1px solid var(--border); border-radius: 12px; padding: 14px; display: grid; gap: 4px; }
+    #imso-game .stat strong { font-size: calc(var(--font-size-base) * 1.45); font-weight: 500; }
+    #imso-game .muted { color: var(--muted-foreground); }
+    #imso-game .controls { display: flex; flex-wrap: wrap; align-items: end; gap: 10px; }
+    #imso-game button, #imso-game select { font: inherit; }
+    #imso-game button { border: 1px solid var(--border); border-radius: 10px; padding: 9px 13px; background: var(--secondary); color: var(--secondary-foreground); cursor: pointer; }
+    #imso-game button.primary, #imso-game button[aria-pressed="true"] { background: var(--primary); color: var(--primary-foreground); border-color: var(--primary); }
+    #imso-game button:disabled { opacity: .55; cursor: default; }
+    #imso-game select { border: 1px solid var(--input); border-radius: 10px; padding: 9px 32px 9px 10px; background: var(--background); color: var(--foreground); }
+    #imso-game label { display: grid; gap: 5px; }
+    #imso-game .progress { height: 10px; border-radius: 999px; background: var(--muted); overflow: hidden; }
+    #imso-game .progress > span { display: block; height: 100%; background: var(--viz-series-1); transition: width .25s ease; }
+    #imso-game .flash { min-height: 210px; display: grid; place-items: center; text-align: center; border: 1px solid var(--border); border-radius: 14px; padding: 24px; background: var(--accent); color: var(--accent-foreground); }
+    #imso-game .flash .word { font-size: calc(var(--font-size-base) * 1.8); font-weight: 500; }
+    #imso-game .flash .meaning { font-size: calc(var(--font-size-base) * 1.25); margin-top: 10px; }
+    #imso-game .question { font-size: calc(var(--font-size-base) * 1.2); font-weight: 500; }
+    #imso-game .options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    #imso-game .options button { text-align: left; min-height: 50px; }
+    #imso-game .feedback { border-inline-start: 5px solid var(--viz-series-1); background: var(--muted); color: var(--foreground); border-radius: 8px; padding: 12px; display: grid; gap: 8px; }
+    #imso-game .feedback.wrong { border-inline-start-color: var(--destructive); }
+    #imso-game .explain { display: grid; gap: 8px; border-top: 1px solid var(--border); padding-top: 10px; }
+    #imso-game .history { display: grid; gap: 8px; }
+    #imso-game .history-row { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+    #imso-game .badge { display: inline-flex; align-items: center; border-radius: 999px; padding: 4px 9px; background: var(--accent); color: var(--accent-foreground); }
+    #imso-game .hidden { display: none !important; }
+    #imso-game textarea { width: 100%; min-height: 190px; resize: vertical; border: 1px solid var(--input); border-radius: 12px; padding: 12px; background: var(--background); color: var(--foreground); font: inherit; }
+    #imso-game input[type="file"] { max-width: 100%; color: var(--foreground); }
+    #imso-game .mission { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: start; }
+    #imso-game .xp-ring { display: grid; place-items: center; width: 86px; height: 86px; border-radius: 50%; border: 8px solid var(--viz-series-1); text-align: center; }
+    #imso-game .xp-ring strong { display: block; font-weight: 500; }
+    #imso-game .upload-preview { max-width: 220px; max-height: 160px; border-radius: 10px; border: 1px solid var(--border); object-fit: contain; }
+    @media (max-width: 620px) {
+      #imso-game .grid, #imso-game .options, #imso-game .mission { grid-template-columns: 1fr; }
+      #imso-game .panel { padding: 14px; }
+    }
+  </style>
+
+  <div class="shell">
+    <div class="hero">
+      <div class="brand">
+        <div class="logo"><img alt="มาสคอตยูเจ" src="data:image/webp;base64,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"></div>
+        <div>
+          <h2>UJ Math Quest</h2>
+          <p class="muted">Think clearly. Explain boldly. Level up.</p>
+        </div>
+      </div>
+      <div class="nav" aria-label="เมนูหลัก">
+        <button type="button" data-view="home" aria-pressed="true">หน้าหลัก</button>
+        <button type="button" data-view="vocab" aria-pressed="false">ท่องศัพท์</button>
+        <button type="button" data-view="quiz" aria-pressed="false">สนามสอบ</button>
+        <button type="button" data-view="coach" aria-pressed="false">UJ AI Coach</button>
+      </div>
+    </div>
+
+    <section id="view-home" class="panel">
+      <div>
+        <h3>แดชบอร์ดการฝึก</h3>
+        <p class="muted">คะแนนจะบันทึกไว้ในเบราว์เซอร์ของเครื่องนี้โดยอัตโนมัติ</p>
+      </div>
+      <div class="grid">
+        <div class="stat"><span class="muted">ศัพท์ที่จำแล้ว</span><strong id="home-vocab">0/100</strong></div>
+        <div class="stat"><span class="muted">ข้อที่ตอบถูกสะสม</span><strong id="home-correct">0</strong></div>
+        <div class="stat"><span class="muted">คะแนนดีที่สุด</span><strong id="home-best">0%</strong></div>
+        <div class="stat"><span class="muted">UJ Coach XP</span><strong id="home-xp">0 XP</strong></div>
+      </div>
+      <div class="controls">
+        <button type="button" class="primary" data-go="vocab">เริ่มท่องศัพท์</button>
+        <button type="button" data-go="quiz">เข้าสนามสอบ</button>
+        <button type="button" data-go="coach">Written Challenge</button>
+      </div>
+      <div>
+        <h3>ผลการสอบล่าสุด</h3>
+        <div id="history" class="history muted">ยังไม่มีผลการสอบ</div>
+      </div>
+    </section>
+
+    <section id="view-vocab" class="panel hidden">
+      <div>
+        <h3>Vocabulary Training · ศัพท์ก่อนสอบ</h3>
+        <p class="muted">กดบัตรเพื่อดูคำแปลและตัวอย่าง แล้วเลือก “จำได้” หรือ “ทบทวนอีกครั้ง”</p>
+      </div>
+      <div class="controls">
+        <label>หมวดศัพท์
+          <select id="vocab-category">
+            <option value="all">ทั้งหมด</option>
+            <option value="command">คำสั่ง</option>
+            <option value="number">จำนวนและการคำนวณ</option>
+            <option value="geometry">เรขาคณิตและการวัด</option>
+            <option value="data">ข้อมูลและการนับ</option>
+          </select>
+        </label>
+        <button type="button" id="vocab-shuffle">สลับลำดับ</button>
+      </div>
+      <div class="progress" aria-label="ความคืบหน้าการท่องศัพท์"><span id="vocab-progress" style="width:0%"></span></div>
+      <button type="button" id="flash-card" class="flash" aria-label="กดเพื่อพลิกบัตรคำศัพท์">
+        <div>
+          <div id="flash-count" class="muted"></div>
+          <div id="flash-word" class="word"></div>
+          <div id="flash-meaning" class="meaning hidden"></div>
+          <div id="flash-example" class="muted hidden"></div>
+        </div>
+      </button>
+      <div class="controls">
+        <button type="button" id="vocab-review">ทบทวนอีกครั้ง</button>
+        <button type="button" id="vocab-know" class="primary">จำได้แล้ว</button>
+      </div>
+    </section>
+
+    <section id="view-coach" class="panel hidden">
+      <div class="mission">
+        <div>
+          <span class="badge">Written Challenge</span>
+          <h3 id="coach-title">UJ AI Coach</h3>
+          <p class="muted">เขียนวิธีทำเป็นภาษาอังกฤษ รับคำใบ้ แก้ไข และเพิ่มคะแนนจากพัฒนาการ</p>
+        </div>
+        <div class="xp-ring"><div><strong id="coach-xp">0</strong><span class="muted">XP</span></div></div>
+      </div>
+      <div class="controls">
+        <label>ภารกิจ
+          <select id="coach-problem">
+            <option value="0">Day 1A · Path inside a field</option>
+            <option value="1">Day 1B · Handshake logic</option>
+            <option value="2">Day 2A · Staircase exploration</option>
+            <option value="3">Day 2B · Digits and divisibility</option>
+            <option value="4">Day 3A · Minimum perimeter</option>
+            <option value="5">Day 3B · Forming even numbers</option>
+            <option value="6">Day 4A · Avoiding a digit</option>
+            <option value="7">Day 4B · Painted cube</option>
+            <option value="8">Day 5A · Grid paths</option>
+            <option value="9">Day 5B · Father and son</option>
+            <option value="10">Day 6A · Counting page digits</option>
+            <option value="11">Day 6B · Chickens and rabbits</option>
+          </select>
+        </label>
+        <span id="coach-attempt" class="badge">Attempt 1/3</span>
+      </div>
+      <div id="coach-question" class="question"></div>
+      <div class="feedback">
+        <strong>Writing frame</strong>
+        <span>Given / Let → Calculation → Reason → Therefore, ...</span>
+      </div>
+      <label for="coach-answer">Type your complete solution in English</label>
+      <textarea id="coach-answer" placeholder="Write your steps here...&#10;Given: ...&#10;Calculation: ...&#10;Therefore, ..."></textarea>
+      <div class="controls">
+        <label>หรือแนบรูปวิธีทำจากกระดาษ
+          <input id="coach-image" type="file" accept="image/*" capture="environment">
+        </label>
+        <img id="coach-preview" class="upload-preview hidden" alt="ภาพวิธีทำที่แนบ">
+      </div>
+      <p class="muted">รุ่นทดลองนี้ให้คะแนนจากข้อความที่พิมพ์ กรุณาพิมพ์สรุปวิธีทำด้วย แม้จะแนบรูปแล้ว</p>
+      <div class="controls">
+        <button type="button" id="coach-submit" class="primary">ส่งให้ UJ Coach ตรวจ</button>
+        <button type="button" id="coach-chat">ส่งข้อความที่พิมพ์เข้ามาตรวจ</button>
+        <button type="button" id="coach-copy">คัดลอกใบส่งตรวจภาพ</button>
+        <button type="button" id="coach-reset">เริ่มภารกิจใหม่</button>
+      </div>
+      <div class="controls">
+        <label>คะแนนที่ได้รับจากการตรวจภาพ
+          <select id="external-score">
+            <option value="">เลือกคะแนน</option>
+            <option value="0">0/10</option><option value="1">1/10</option><option value="2">2/10</option>
+            <option value="3">3/10</option><option value="4">4/10</option><option value="5">5/10</option>
+            <option value="6">6/10</option><option value="7">7/10</option><option value="8">8/10</option>
+            <option value="9">9/10</option><option value="10">10/10</option>
+          </select>
+        </label>
+        <button type="button" id="save-external-score">บันทึกคะแนนและ XP</button>
+      </div>
+      <div id="coach-feedback" class="feedback hidden" aria-live="polite"></div>
+    </section>
+
+    <section id="view-quiz" class="panel hidden">
+      <div id="quiz-setup">
+        <h3>เลือกชุดข้อสอบ</h3>
+        <p class="muted">แต่ละชุดมี 30 ข้อ เป็นภาษาอังกฤษ และครอบคลุมหัวข้อ IMSO ระดับประถม</p>
+        <div class="controls">
+          <label>ชุดข้อสอบ
+            <select id="set-select">
+              <option value="A">Set A · Arithmetic & Logic</option>
+              <option value="B">Set B · Geometry & Measurement</option>
+              <option value="C">Set C · Counting & Data</option>
+              <option value="D">Set D · Mixed Challenge</option>
+            </select>
+          </label>
+          <button type="button" id="start-quiz" class="primary">เริ่มสอบ</button>
+        </div>
+      </div>
+
+      <div id="quiz-play" class="hidden">
+        <div class="hero">
+          <span id="quiz-label" class="badge"></span>
+          <span id="quiz-score">Score: 0</span>
+        </div>
+        <div class="progress" aria-label="ความคืบหน้าข้อสอบ"><span id="quiz-progress" style="width:0%"></span></div>
+        <div id="question-topic" class="muted"></div>
+        <div id="question-text" class="question"></div>
+        <div id="option-list" class="options"></div>
+        <div id="feedback" class="feedback hidden" aria-live="polite"></div>
+        <div class="controls">
+          <button type="button" id="show-solution" class="hidden">ดูเฉลยและคำอธิบาย</button>
+          <button type="button" id="next-question" class="primary hidden">ข้อต่อไป</button>
+        </div>
+      </div>
+
+      <div id="quiz-result" class="hidden">
+        <h3>สรุปผลการสอบ</h3>
+        <div class="grid">
+          <div class="stat"><span class="muted">คะแนน</span><strong id="result-score"></strong></div>
+          <div class="stat"><span class="muted">ร้อยละ</span><strong id="result-percent"></strong></div>
+          <div class="stat"><span class="muted">ผลประเมิน</span><strong id="result-level"></strong></div>
+        </div>
+        <p id="result-advice"></p>
+        <div class="controls">
+          <button type="button" id="retry-quiz" class="primary">ทำชุดนี้อีกครั้ง</button>
+          <button type="button" id="choose-set">เลือกชุดอื่น</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    (function () {
+      var root = document.getElementById("imso-game");
+      var vocab = [
+        {w:"find",t:"หา / จงหา",e:"Find the value of x. = จงหาค่าของ x",c:"command"},
+        {w:"calculate",t:"คำนวณ",e:"Calculate the total cost. = คำนวณค่าใช้จ่ายทั้งหมด",c:"command"},
+        {w:"determine",t:"กำหนดหรือหาคำตอบจากข้อมูล",e:"Determine the least number. = จงหาจำนวนที่น้อยที่สุด",c:"command"},
+        {w:"explain",t:"อธิบาย",e:"Explain your method. = อธิบายวิธีทำ",c:"command"},
+        {w:"show all steps",t:"แสดงวิธีทำทุกขั้นตอน",e:"Show all steps clearly. = แสดงวิธีทำให้ชัดเจน",c:"command"},
+        {w:"justify",t:"ให้เหตุผลสนับสนุนคำตอบ",e:"Justify your answer. = ให้เหตุผลว่าคำตอบถูกต้อง",c:"command"},
+        {w:"prove",t:"พิสูจน์",e:"Prove that it is minimal. = พิสูจน์ว่าเป็นค่าน้อยที่สุด",c:"command"},
+        {w:"describe the pattern",t:"อธิบายแบบรูปหรือความสัมพันธ์",e:"Describe how the pattern grows. = อธิบายการเพิ่มของแบบรูป",c:"command"},
+        {w:"greatest",t:"มากที่สุด",e:"the greatest possible number = จำนวนที่มากที่สุดที่เป็นไปได้",c:"number"},
+        {w:"least / smallest",t:"น้อยที่สุด",e:"the least possible perimeter = เส้นรอบรูปน้อยที่สุด",c:"number"},
+        {w:"at least",t:"อย่างน้อย",e:"at least 5 students = นักเรียนอย่างน้อย 5 คน",c:"number"},
+        {w:"at most",t:"ไม่เกิน / อย่างมาก",e:"at most 8 moves = เดินไม่เกิน 8 ครั้ง",c:"number"},
+        {w:"exactly",t:"เท่ากับจำนวนที่กำหนดพอดี",e:"exactly 2 painted faces = มีหน้าที่ทาสีพอดี 2 หน้า",c:"number"},
+        {w:"integer",t:"จำนวนเต็ม",e:"positive integer = จำนวนเต็มบวก",c:"number"},
+        {w:"consecutive integers",t:"จำนวนเต็มเรียงต่อกัน",e:"three consecutive integers = จำนวนเต็มเรียงกันสามจำนวน",c:"number"},
+        {w:"odd / even",t:"จำนวนคี่ / จำนวนคู่",e:"a three-digit even number = จำนวนคู่สามหลัก",c:"number"},
+        {w:"factor",t:"ตัวประกอบ",e:"3 is a factor of 12. = 3 เป็นตัวประกอบของ 12",c:"number"},
+        {w:"multiple",t:"พหุคูณ",e:"24 is a multiple of 6. = 24 เป็นพหุคูณของ 6",c:"number"},
+        {w:"divisible by",t:"หารลงตัวด้วย",e:"30 is divisible by 5. = 30 หารด้วย 5 ลงตัว",c:"number"},
+        {w:"remainder",t:"เศษเหลือจากการหาร",e:"The remainder is 2. = เหลือเศษ 2",c:"number"},
+        {w:"ratio",t:"อัตราส่วน",e:"the ratio of red to blue = อัตราส่วนสีแดงต่อสีน้ำเงิน",c:"number"},
+        {w:"fraction",t:"เศษส่วน",e:"Write the fraction in simplest form. = เขียนเศษส่วนอย่างต่ำ",c:"number"},
+        {w:"percentage",t:"ร้อยละ / เปอร์เซ็นต์",e:"a 15% discount = ลดราคา 15 เปอร์เซ็นต์",c:"number"},
+        {w:"without repetition",t:"โดยไม่ใช้ตัวเลขซ้ำ",e:"form numbers without repetition = สร้างจำนวนโดยไม่ใช้เลขซ้ำ",c:"number"},
+        {w:"perimeter",t:"ความยาวรอบรูป",e:"Find the perimeter. = จงหาความยาวรอบรูป",c:"geometry"},
+        {w:"area",t:"พื้นที่",e:"The area is 24 square centimetres. = พื้นที่ 24 ตารางเซนติเมตร",c:"geometry"},
+        {w:"volume",t:"ปริมาตร",e:"Find the volume of the cube. = หาปริมาตรของลูกบาศก์",c:"geometry"},
+        {w:"side length",t:"ความยาวด้าน",e:"a square with side length 5 cm = สี่เหลี่ยมจัตุรัสยาวด้านละ 5 ซม.",c:"geometry"},
+        {w:"angle",t:"มุม",e:"a right angle = มุมฉาก",c:"geometry"},
+        {w:"parallel",t:"ขนาน",e:"two parallel lines = เส้นขนานสองเส้น",c:"geometry"},
+        {w:"intersection point",t:"จุดตัด",e:"the number of intersection points = จำนวนจุดตัด",c:"geometry"},
+        {w:"symmetry",t:"สมมาตร",e:"a line of symmetry = แกนสมมาตร",c:"geometry"},
+        {w:"mean",t:"ค่าเฉลี่ยเลขคณิต",e:"Find the mean score. = จงหาคะแนนเฉลี่ย",c:"data"},
+        {w:"median",t:"มัธยฐาน / ค่ากลางเมื่อเรียงข้อมูล",e:"The median is 12. = มัธยฐานเท่ากับ 12",c:"data"},
+        {w:"mode",t:"ฐานนิยม / ค่าที่พบมากที่สุด",e:"Find the mode. = จงหาฐานนิยม",c:"data"},
+        {w:"probability",t:"ความน่าจะเป็น",e:"Find the probability of choosing blue. = หาความน่าจะเป็นที่จะได้สีน้ำเงิน",c:"data"},
+        {w:"arrangement",t:"การจัดเรียง",e:"Count the possible arrangements. = นับจำนวนวิธีจัดเรียง",c:"data"},
+        {w:"combination",t:"การเลือกโดยไม่สนใจลำดับ",e:"Choose a pair from 8 people. = เลือกคน 1 คู่จาก 8 คน",c:"data"},
+        {w:"altogether",t:"รวมทั้งหมด",e:"There are 64 cubes altogether. = มีลูกบาศก์รวม 64 ลูก",c:"data"},
+        {w:"at random",t:"โดยการสุ่ม",e:"One ball is chosen at random. = สุ่มหยิบลูกบอลหนึ่งลูก",c:"data"},
+        {w:"sum",t:"ผลบวก",e:"Find the sum. = จงหาผลบวก",c:"number"},
+        {w:"difference",t:"ผลต่าง",e:"Find the difference. = จงหาผลต่าง",c:"number"},
+        {w:"product",t:"ผลคูณ",e:"Find the product of 8 and 7. = จงหาผลคูณของ 8 กับ 7",c:"number"},
+        {w:"quotient",t:"ผลหาร",e:"Find the quotient. = จงหาผลหาร",c:"number"},
+        {w:"numerator",t:"ตัวเศษ",e:"The numerator is 3. = ตัวเศษคือ 3",c:"number"},
+        {w:"denominator",t:"ตัวส่วน",e:"The denominator is 5. = ตัวส่วนคือ 5",c:"number"},
+        {w:"mixed number",t:"จำนวนคละ",e:"Write the answer as a mixed number. = เขียนคำตอบเป็นจำนวนคละ",c:"number"},
+        {w:"simplest form",t:"รูปอย่างต่ำ",e:"Give the fraction in simplest form. = ตอบเป็นเศษส่วนอย่างต่ำ",c:"number"},
+        {w:"prime number",t:"จำนวนเฉพาะ",e:"Which number is prime? = จำนวนใดเป็นจำนวนเฉพาะ",c:"number"},
+        {w:"composite number",t:"จำนวนประกอบ",e:"12 is a composite number. = 12 เป็นจำนวนประกอบ",c:"number"},
+        {w:"common factor",t:"ตัวประกอบร่วม",e:"List the common factors. = เขียนตัวประกอบร่วม",c:"number"},
+        {w:"greatest common divisor (GCD)",t:"ตัวหารร่วมมาก (ห.ร.ม.)",e:"Find the GCD of 18 and 24. = หา ห.ร.ม. ของ 18 กับ 24",c:"number"},
+        {w:"least common multiple (LCM)",t:"ตัวคูณร่วมน้อย (ค.ร.น.)",e:"Find the LCM of 6 and 8. = หา ค.ร.น. ของ 6 กับ 8",c:"number"},
+        {w:"place value",t:"ค่าประจำหลัก",e:"Find the place value of 7. = หาค่าประจำหลักของ 7",c:"number"},
+        {w:"digit",t:"เลขโดด",e:"The tens digit is 4. = เลขโดดหลักสิบคือ 4",c:"number"},
+        {w:"equation",t:"สมการ",e:"Solve the equation. = แก้สมการ",c:"number"},
+        {w:"variable",t:"ตัวแปร",e:"Let x be the variable. = ให้ x เป็นตัวแปร",c:"number"},
+        {w:"expression",t:"นิพจน์",e:"Simplify the expression. = ทำให้นิพจน์อยู่ในรูปอย่างง่าย",c:"number"},
+        {w:"value",t:"ค่า",e:"Find the value of x. = จงหาค่าของ x",c:"number"},
+        {w:"sequence",t:"ลำดับ",e:"Continue the sequence. = เขียนลำดับต่อ",c:"number"},
+        {w:"term",t:"พจน์",e:"Find the next term. = จงหาพจน์ถัดไป",c:"number"},
+        {w:"square number",t:"จำนวนกำลังสองสมบูรณ์",e:"36 is a square number. = 36 เป็นจำนวนกำลังสองสมบูรณ์",c:"number"},
+        {w:"cube number",t:"จำนวนกำลังสามสมบูรณ์",e:"27 is a cube number. = 27 เป็นจำนวนกำลังสามสมบูรณ์",c:"number"},
+        {w:"estimate",t:"ประมาณค่า",e:"Estimate the answer. = ประมาณคำตอบ",c:"command"},
+        {w:"approximately",t:"โดยประมาณ",e:"The length is approximately 10 cm. = ยาวประมาณ 10 ซม.",c:"command"},
+        {w:"increase",t:"เพิ่มขึ้น",e:"The price increases by 10%. = ราคาเพิ่มขึ้น 10%",c:"number"},
+        {w:"decrease",t:"ลดลง",e:"The value decreases by 5. = ค่าลดลง 5",c:"number"},
+        {w:"discount",t:"ส่วนลด",e:"A discount of 20%. = ส่วนลด 20%",c:"number"},
+        {w:"rate",t:"อัตรา",e:"At the same rate. = ด้วยอัตราเท่าเดิม",c:"number"},
+        {w:"speed",t:"อัตราเร็ว",e:"Speed equals distance divided by time. = อัตราเร็วเท่ากับระยะทางหารด้วยเวลา",c:"number"},
+        {w:"distance",t:"ระยะทาง",e:"Find the total distance. = หาระยะทางทั้งหมด",c:"geometry"},
+        {w:"time",t:"เวลา",e:"How much time is needed? = ต้องใช้เวลาเท่าใด",c:"geometry"},
+        {w:"length",t:"ความยาว",e:"Measure the length. = วัดความยาว",c:"geometry"},
+        {w:"width",t:"ความกว้าง",e:"The width is 6 cm. = กว้าง 6 ซม.",c:"geometry"},
+        {w:"height",t:"ความสูง",e:"The height is 8 cm. = สูง 8 ซม.",c:"geometry"},
+        {w:"radius",t:"รัศมี",e:"The radius of the circle. = รัศมีของวงกลม",c:"geometry"},
+        {w:"diameter",t:"เส้นผ่านศูนย์กลาง",e:"The diameter is twice the radius. = เส้นผ่านศูนย์กลางยาวสองเท่าของรัศมี",c:"geometry"},
+        {w:"circumference",t:"ความยาวรอบวง",e:"Find the circumference. = หาความยาวรอบวง",c:"geometry"},
+        {w:"polygon",t:"รูปหลายเหลี่ยม",e:"A polygon has straight sides. = รูปหลายเหลี่ยมมีด้านเป็นเส้นตรง",c:"geometry"},
+        {w:"triangle",t:"รูปสามเหลี่ยม",e:"The triangle has three sides. = รูปสามเหลี่ยมมีสามด้าน",c:"geometry"},
+        {w:"quadrilateral",t:"รูปสี่เหลี่ยม",e:"A quadrilateral has four sides. = รูปสี่เหลี่ยมมีสี่ด้าน",c:"geometry"},
+        {w:"rectangle",t:"สี่เหลี่ยมผืนผ้า",e:"Find the area of the rectangle. = หาพื้นที่สี่เหลี่ยมผืนผ้า",c:"geometry"},
+        {w:"square",t:"สี่เหลี่ยมจัตุรัส",e:"All sides of a square are equal. = ด้านทุกด้านของสี่เหลี่ยมจัตุรัสยาวเท่ากัน",c:"geometry"},
+        {w:"parallelogram",t:"สี่เหลี่ยมด้านขนาน",e:"Opposite sides are parallel. = ด้านตรงข้ามขนานกัน",c:"geometry"},
+        {w:"trapezoid",t:"สี่เหลี่ยมคางหมู",e:"A trapezoid has a pair of parallel sides. = สี่เหลี่ยมคางหมูมีด้านขนานหนึ่งคู่",c:"geometry"},
+        {w:"circle",t:"วงกลม",e:"The centre of the circle. = จุดศูนย์กลางวงกลม",c:"geometry"},
+        {w:"cube",t:"ลูกบาศก์",e:"A cube has six square faces. = ลูกบาศก์มีหน้ารูปสี่เหลี่ยมจัตุรัสหกหน้า",c:"geometry"},
+        {w:"cuboid",t:"ทรงสี่เหลี่ยมมุมฉาก",e:"Find the volume of the cuboid. = หาปริมาตรทรงสี่เหลี่ยมมุมฉาก",c:"geometry"},
+        {w:"net",t:"รูปคลี่",e:"Which net makes a cube? = รูปคลี่ใดประกอบเป็นลูกบาศก์",c:"geometry"},
+        {w:"face",t:"หน้า (ของรูปทรง)",e:"A painted face. = หน้าที่ทาสี",c:"geometry"},
+        {w:"edge",t:"สันหรือขอบของรูปทรง",e:"A cube has 12 edges. = ลูกบาศก์มี 12 สัน",c:"geometry"},
+        {w:"vertex",t:"จุดยอด",e:"A cube has 8 vertices. = ลูกบาศก์มี 8 จุดยอด",c:"geometry"},
+        {w:"coordinate",t:"พิกัด",e:"The point has coordinates (2,3). = จุดมีพิกัด (2,3)",c:"geometry"},
+        {w:"horizontal",t:"แนวนอน",e:"Move horizontally. = เคลื่อนที่ในแนวนอน",c:"geometry"},
+        {w:"vertical",t:"แนวตั้ง",e:"A vertical line. = เส้นแนวตั้ง",c:"geometry"},
+        {w:"rotate",t:"หมุน",e:"Rotate the shape 90 degrees. = หมุนรูป 90 องศา",c:"geometry"},
+        {w:"reflect",t:"สะท้อน",e:"Reflect the shape across the line. = สะท้อนรูปข้ามเส้น",c:"geometry"},
+        {w:"table",t:"ตารางข้อมูล",e:"Read the information in the table. = อ่านข้อมูลในตาราง",c:"data"},
+        {w:"bar graph",t:"แผนภูมิแท่ง",e:"The bar graph shows the scores. = แผนภูมิแท่งแสดงคะแนน",c:"data"},
+        {w:"frequency",t:"ความถี่",e:"Find the frequency of 5. = หาความถี่ของเลข 5",c:"data"}
+      ];
+
+      function q(topic, text, options, answer, en, th) {
+        return {topic:topic, text:text, options:options, answer:answer, en:en, th:th};
+      }
+      var sets = {
+        A: [
+          q("Arithmetic","Find the value of 72 ÷ 8 × 6 + 7.",["54","61","67","79"],1,"72 ÷ 8 = 9, then 9 × 6 = 54, and 54 + 7 = 61.","ทำหารและคูณจากซ้ายไปขวาก่อน แล้วจึงบวก: 72 ÷ 8 = 9, 9 × 6 = 54, 54 + 7 = 61"),
+          q("Factors","What is the greatest common divisor of 48 and 72?",["12","18","24","36"],2,"48 = 2⁴ × 3 and 72 = 2³ × 3². Their GCD is 2³ × 3 = 24.","แยกตัวประกอบแล้วเลือกกำลังที่น้อยกว่า: ห.ร.ม. = 2³ × 3 = 24"),
+          q("Fractions","What is 3/5 + 7/10?",["1 1/10","1 3/10","1 1/2","2 1/5"],1,"3/5 = 6/10, so 6/10 + 7/10 = 13/10 = 1 3/10.","ทำส่วนให้เท่ากัน: 3/5 = 6/10 แล้วบวกได้ 13/10 = 1 3/10"),
+          q("Percentage","A 600-baht bag is discounted by 20%. What is the sale price?",["420 baht","460 baht","480 baht","520 baht"],2,"The discount is 20% of 600 = 120. The sale price is 600 - 120 = 480 baht.","ส่วนลดเท่ากับ 20% ของ 600 = 120 บาท ราคาขายจึงเป็น 600 - 120 = 480 บาท"),
+          q("Ratio","The ratio of boys to girls is 2:3. There are 35 students. How many are boys?",["12","14","20","21"],1,"There are 5 equal parts. Each part is 35 ÷ 5 = 7, so boys = 2 × 7 = 14.","อัตราส่วนรวม 2 + 3 = 5 ส่วน แต่ละส่วนมี 35 ÷ 5 = 7 คน เด็กชายมี 2 × 7 = 14 คน"),
+          q("Remainders","What is the remainder when 157 is divided by 12?",["1","5","9","11"],0,"12 × 13 = 156, so 157 = 156 + 1. The remainder is 1.","12 × 13 = 156 ดังนั้น 157 มากกว่า 156 อยู่ 1 จึงเหลือเศษ 1"),
+          q("Logical arithmetic","There are 18 chickens and rabbits with 50 legs altogether. How many rabbits are there?",["5","7","9","11"],1,"If all were chickens, there would be 36 legs. The extra 14 legs make 14 ÷ 2 = 7 rabbits.","ถ้าเป็นไก่ทั้งหมดจะมี 36 ขา แต่มีเกินมา 14 ขา กระต่ายแต่ละตัวเพิ่ม 2 ขา จึงมีกระต่าย 14 ÷ 2 = 7 ตัว"),
+          q("Number patterns","Find the next term: 2, 5, 11, 23, 47, ...",["71","85","94","95"],3,"Each term is twice the previous term plus 1. Thus 47 × 2 + 1 = 95.","แต่ละพจน์เป็นสองเท่าของพจน์ก่อนหน้าแล้วบวก 1 ดังนั้น 47 × 2 + 1 = 95"),
+          q("Age","A mother is three times as old as her child. Their ages total 48. How old is the child?",["10","12","14","16"],1,"Let the child's age be x. Then x + 3x = 48, so 4x = 48 and x = 12.","ให้ลูกอายุ x ปี แม่อายุ 3x ปี รวมเป็น 4x = 48 จึงได้ x = 12 ปี"),
+          q("Counting","How many two-digit numbers are divisible by 9?",["9","10","11","12"],1,"The two-digit multiples are 18, 27, ..., 99. There are 99 ÷ 9 - 1 = 10 of them.","พหุคูณของ 9 ที่เป็นสองหลักคือ 18 ถึง 99 ได้แก่ลำดับที่ 2 ถึง 11 จึงมี 10 จำนวน")
+        ],
+        B: [
+          q("Perimeter","A rectangle is 17 cm long and 9 cm wide. Find its perimeter.",["26 cm","43 cm","52 cm","153 cm"],2,"Perimeter = 2(17 + 9) = 52 cm.","ความยาวรอบรูป = 2(17 + 9) = 52 เซนติเมตร"),
+          q("Area","A square has a perimeter of 36 cm. Find its area.",["36 cm²","72 cm²","81 cm²","1296 cm²"],2,"Each side is 36 ÷ 4 = 9 cm. Area = 9 × 9 = 81 cm².","แต่ละด้านยาว 36 ÷ 4 = 9 ซม. พื้นที่ = 9 × 9 = 81 ตร.ซม."),
+          q("Angles","Two angles on a straight line are (2x + 10)° and (3x - 5)°. Find x.",["25","30","35","40"],2,"Their sum is 180°: 2x + 10 + 3x - 5 = 180, so 5x = 175 and x = 35.","มุมบนเส้นตรงรวม 180° จึงได้ 5x + 5 = 180, 5x = 175 และ x = 35"),
+          q("Triangle","A triangle has base 16 cm and height 7 cm. Find its area.",["23 cm²","56 cm²","112 cm²","224 cm²"],1,"Area = 1/2 × 16 × 7 = 56 cm².","พื้นที่สามเหลี่ยม = 1/2 × ฐาน × สูง = 1/2 × 16 × 7 = 56 ตร.ซม."),
+          q("Volume","A cuboid measures 8 cm by 4 cm by 5 cm. Find its volume.",["17 cm³","80 cm³","160 cm³","320 cm³"],2,"Volume = 8 × 4 × 5 = 160 cm³.","ปริมาตรทรงสี่เหลี่ยมมุมฉาก = กว้าง × ยาว × สูง = 8 × 4 × 5 = 160 ลบ.ซม."),
+          q("Symmetry","How many lines of symmetry does a square have?",["2","3","4","8"],2,"A square has two diagonal and two horizontal/vertical lines of symmetry, for a total of 4.","สี่เหลี่ยมจัตุรัสมีแกนสมมาตรตามเส้นทแยงมุม 2 เส้น และแนวตั้ง–แนวนอน 2 เส้น รวม 4 เส้น"),
+          q("Geometry","Five lines are drawn so that no two are parallel and no three meet at one point. How many intersection points are possible?",["5","8","10","20"],2,"Each pair of lines gives one intersection: 5 × 4 ÷ 2 = 10.","เส้นตรงทุกคู่ตัดกันหนึ่งครั้ง จำนวนคู่ของเส้น 5 เส้นคือ 5 × 4 ÷ 2 = 10 จุด"),
+          q("Measurement","A path 1 m wide is built inside a 12 m by 10 m rectangle along all four sides. Find the path's area.",["20 m²","36 m²","40 m²","44 m²"],2,"Outer area = 120. Inner rectangle = 10 by 8, so inner area = 80. Path area = 120 - 80 = 40 m².","พื้นที่ทั้งหมด 12 × 10 = 120 ตร.ม. ด้านในเหลือ 10 × 8 = 80 ตร.ม. ทางเดินจึงมีพื้นที่ 40 ตร.ม."),
+          q("Solid geometry","A 3 × 3 × 3 cube is painted on every outer face. How many unit cubes have no painted face?",["0","1","6","8"],1,"Only the single cube at the centre has no painted face.","ลูกบาศก์ขนาด 3 × 3 × 3 มีลูกที่อยู่กลางสุดเพียง 1 ลูกซึ่งไม่สัมผัสผิวด้านนอก"),
+          q("Perimeter","A rectangle has area 48 cm² and positive integer side lengths. Which dimensions give the least perimeter?",["1 by 48","3 by 16","4 by 12","6 by 8"],3,"Among the factor pairs, 6 and 8 are closest. Their perimeter is 2(6 + 8) = 28 cm, the least.","คู่ตัวประกอบที่อยู่ใกล้กันที่สุดคือ 6 กับ 8 ซึ่งให้เส้นรอบรูป 2(6 + 8) = 28 ซม. น้อยที่สุด")
+        ],
+        C: [
+          q("Mean","Find the mean of 12, 18, 20, 25, and 30.",["19","20","21","22"],2,"The total is 105. The mean is 105 ÷ 5 = 21.","ผลรวมเท่ากับ 105 แล้วหารด้วยจำนวนข้อมูล 5 ค่า ได้ค่าเฉลี่ย 21"),
+          q("Median","Find the median of 4, 7, 9, 12, 15, 18.",["9","10","10.5","12"],2,"There are six values, so the median is the mean of the third and fourth: (9 + 12) ÷ 2 = 10.5.","มีข้อมูล 6 ค่า มัธยฐานคือค่าเฉลี่ยของตัวที่ 3 และ 4: (9 + 12) ÷ 2 = 10.5"),
+          q("Mode","Find the mode of 2, 3, 3, 5, 5, 5, 7.",["2","3","5","7"],2,"The number 5 appears three times, more often than any other value.","เลข 5 ปรากฏ 3 ครั้ง มากกว่าค่าอื่น จึงเป็นฐานนิยม"),
+          q("Probability","A bag has 4 red, 3 blue, and 5 green balls. What is the probability of choosing a blue ball?",["1/5","1/4","1/3","3/5"],1,"There are 12 balls and 3 are blue. The probability is 3/12 = 1/4.","มีลูกบอลทั้งหมด 12 ลูก เป็นสีน้ำเงิน 3 ลูก ความน่าจะเป็น = 3/12 = 1/4"),
+          q("Counting","How many three-digit numbers can be formed using 2, 4, and 6 exactly once?",["3","6","8","9"],1,"There are 3 × 2 × 1 = 6 arrangements.","หลักร้อยเลือกได้ 3 วิธี หลักสิบเหลือ 2 วิธี และหลักหน่วย 1 วิธี รวม 3 × 2 × 1 = 6 วิธี"),
+          q("Counting","Seven people each shake hands with every other person once. How many handshakes occur?",["14","21","35","42"],1,"Count pairs: 7 × 6 ÷ 2 = 21.","การจับมือหนึ่งครั้งเกิดจากคนหนึ่งคู่ จำนวนคู่ของ 7 คนคือ 7 × 6 ÷ 2 = 21 คู่"),
+          q("Counting digits","How many digits are used to number pages 1 through 25?",["25","32","41","50"],2,"Pages 1-9 use 9 digits. Pages 10-25 contain 16 two-digit numbers and use 32 digits. Total = 41.","หน้า 1–9 ใช้ 9 หลัก หน้า 10–25 มี 16 หน้า ใช้ 32 หลัก รวม 9 + 32 = 41 หลัก"),
+          q("Inclusion-exclusion","How many integers from 1 to 30 are divisible by 2 or 3?",["15","18","20","25"],2,"There are 15 multiples of 2 and 10 of 3. Subtract 5 multiples of 6: 15 + 10 - 5 = 20.","มีพหุคูณของ 2 จำนวน 15 ค่า และของ 3 จำนวน 10 ค่า แต่ซ้ำกันที่พหุคูณของ 6 จำนวน 5 ค่า จึงได้ 20"),
+          q("Arrangements","How many two-digit even numbers can be formed from 1, 2, 3, 4 without repetition?",["4","6","8","12"],1,"The units digit has 2 choices: 2 or 4. The tens digit then has 3 choices. Total = 2 × 3 = 6.","หลักหน่วยต้องเป็น 2 หรือ 4 มี 2 วิธี จากนั้นหลักสิบเลือกได้ 3 วิธี รวม 6 จำนวน"),
+          q("Data","The mean of five numbers is 18. What is their total?",["23","72","90","108"],2,"Total = mean × number of values = 18 × 5 = 90.","ผลรวม = ค่าเฉลี่ย × จำนวนข้อมูล = 18 × 5 = 90")
+        ],
+        D: [
+          q("Patterns","Find the next term: 1, 4, 10, 19, 31, ...",["43","44","45","46"],3,"The differences are 3, 6, 9, 12. The next difference is 15, so 31 + 15 = 46.","ผลต่างเพิ่มทีละ 3 คือ 3, 6, 9, 12 ดังนั้นผลต่างถัดไปเป็น 15 และคำตอบคือ 31 + 15 = 46"),
+          q("Calendar","If 1 June is a Monday, what day is 22 June?",["Monday","Tuesday","Wednesday","Sunday"],0,"The dates are 21 days apart, exactly 3 weeks, so the day is Monday.","วันที่ห่างกัน 21 วัน เท่ากับ 3 สัปดาห์พอดี จึงเป็นวันจันทร์เหมือนเดิม"),
+          q("Rates","Six workers finish a job in 10 days. At the same rate, how many days will 12 workers need?",["4","5","8","20"],1,"The job requires 6 × 10 = 60 worker-days. With 12 workers, it takes 60 ÷ 12 = 5 days.","งานทั้งหมดเท่ากับ 60 คน-วัน เมื่อมี 12 คน จะใช้เวลา 60 ÷ 12 = 5 วัน"),
+          q("Logic","Five consecutive odd integers have a sum of 95. What is the smallest?",["15","17","19","21"],0,"The middle number is 95 ÷ 5 = 19. The numbers are 15, 17, 19, 21, 23.","จำนวนตรงกลางคือค่าเฉลี่ย 95 ÷ 5 = 19 จึงได้ 15, 17, 19, 21, 23 และจำนวนน้อยที่สุดคือ 15"),
+          q("Digits","Use 0, 3, 5, and 7 once each. What is the greatest four-digit number divisible by 5?",["7350","7503","7530","7535"],2,"It must end in 0 or 5. Ending in 0 gives 7530; ending in 5 gives at most 7305. Therefore 7530 is greatest.","จำนวนที่หารด้วย 5 ลงตัวต้องลงท้ายด้วย 0 หรือ 5 ถ้าลงท้าย 0 จะจัดได้มากสุดเป็น 7530 ซึ่งมากกว่า 7305"),
+          q("Probability","A fair die is rolled. What is the probability of getting a factor of 6?",["1/3","1/2","2/3","5/6"],2,"The factors of 6 on the die are 1, 2, 3, and 6. Thus the probability is 4/6 = 2/3.","แต้มที่เป็นตัวประกอบของ 6 คือ 1, 2, 3 และ 6 มี 4 ผลลัพธ์จากทั้งหมด 6 จึงเป็น 2/3"),
+          q("Exploration","A child climbs 5 steps using moves of 1 or 2 steps. How many different ways are possible?",["5","8","10","13"],1,"The counts follow 1, 2, 3, 5, 8 for 1-5 steps. Each count is the sum of the previous two.","จำนวนวิธีสำหรับบันได 1–5 ขั้นคือ 1, 2, 3, 5, 8 เพราะก้าวสุดท้ายมาจากขั้นก่อนหน้า 1 หรือ 2 ขั้น"),
+          q("Painted cube","A 4 × 4 × 4 cube is painted outside. How many unit cubes have exactly three painted faces?",["4","8","12","24"],1,"Only corner cubes have exactly three painted faces. A cube has 8 corners.","ลูกบาศก์ที่มีสี 3 หน้าอยู่ที่มุมเท่านั้น และลูกบาศก์มี 8 มุม จึงมี 8 ลูก"),
+          q("Grid paths","A robot moves from (0,0) to (3,2), only right or up. How many shortest paths are possible?",["5","8","10","12"],2,"Each path has 3 right moves and 2 up moves. Choose the positions of the 2 up moves among 5: 5 × 4 ÷ 2 = 10.","เส้นทางสั้นสุดประกอบด้วยขวา 3 ครั้งและขึ้น 2 ครั้ง เลือกตำแหน่งของการขึ้น 2 ตำแหน่งจาก 5 ได้ 10 วิธี"),
+          q("Mixed arithmetic","A price rises by 20% and then falls by 20%. Starting from 500 baht, what is the final price?",["480 baht","500 baht","520 baht","540 baht"],0,"500 × 1.20 × 0.80 = 480. Equal percentage changes use different base amounts.","เพิ่ม 20% ได้ 600 บาท จากนั้นลด 20% ของ 600 คือ 120 บาท จึงเหลือ 480 บาท ไม่กลับมาเท่าเดิม")
+        ]
+      };
+
+      function addNumberQuestion(setName, topic, text, correct, unit, en, th, seed) {
+        var d1 = seed % 5 + 1;
+        var d2 = seed % 4 + 2;
+        var values = [correct, correct + d1, Math.max(1, correct - d2), correct + d1 + d2];
+        for (var j = 1; j < values.length; j += 1) {
+          while (values.slice(0, j).indexOf(values[j]) >= 0) values[j] += 1;
+        }
+        var shift = seed % 4;
+        var rotated = values.slice(shift).concat(values.slice(0, shift));
+        sets[setName].push(q(topic, text, rotated.map(function (v) { return String(v) + unit; }), rotated.indexOf(correct), en, th));
+      }
+      for (var i = 0; i < 20; i += 1) {
+        var kind = i % 5;
+        if (kind === 0) {
+          var a = 30 + i * 2, b = 3 + i % 5, c = 4 + i % 6, ansA = a + b * c;
+          addNumberQuestion("A", "Arithmetic", "Find the value of " + a + " + " + b + " × " + c + ".", ansA, "", "Multiply first: " + b + " × " + c + " = " + (b*c) + ", then add " + a + " to get " + ansA + ".", "คูณก่อน: " + b + " × " + c + " = " + (b*c) + " แล้วบวก " + a + " ได้ " + ansA, i);
+        } else if (kind === 1) {
+          var price = 400 + i * 50, pct = [10,20,25,50][i % 4], sale = price * (100 - pct) / 100;
+          addNumberQuestion("A", "Percentage", "An item costs " + price + " baht and is discounted by " + pct + "%. Find the sale price.", sale, " baht", "Sale price = " + price + " × " + (100-pct) + "% = " + sale + " baht.", "ราคาขาย = " + price + " × " + (100-pct) + "% = " + sale + " บาท", i);
+        } else if (kind === 2) {
+          var n = 103 + i * 7, divisor = 6 + i % 5, rem = n % divisor;
+          addNumberQuestion("A", "Remainders", "What is the remainder when " + n + " is divided by " + divisor + "?", rem, "", n + " = " + divisor + " × " + Math.floor(n/divisor) + " + " + rem + ".", n + " = " + divisor + " × " + Math.floor(n/divisor) + " + " + rem + " จึงเหลือเศษ " + rem, i);
+        } else if (kind === 3) {
+          var left = 2 + i % 3, right = 3 + i % 4, part = 4 + i % 5, total = (left+right)*part, leftCount = left*part;
+          addNumberQuestion("A", "Ratio", "The ratio of red to blue counters is " + left + ":" + right + ". There are " + total + " counters altogether. How many are red?", leftCount, "", "There are " + (left+right) + " parts, each worth " + part + ". Red counters = " + left + " × " + part + " = " + leftCount + ".", "มีทั้งหมด " + (left+right) + " ส่วน ส่วนละ " + part + " ชิ้น สีแดงมี " + left + " × " + part + " = " + leftCount + " ชิ้น", i);
+        } else {
+          var middle = 21 + 2*i, oddSum = 5*middle, smallest = middle-4;
+          addNumberQuestion("A", "Number patterns", "Five consecutive odd integers have a sum of " + oddSum + ". Find the smallest integer.", smallest, "", "The middle integer is " + oddSum + " ÷ 5 = " + middle + ". The smallest is " + middle + " - 4 = " + smallest + ".", "จำนวนตรงกลางคือ " + oddSum + " ÷ 5 = " + middle + " จำนวนน้อยสุดคือ " + middle + " - 4 = " + smallest, i);
+        }
+
+        if (kind === 0) {
+          var len = 11+i, wid = 5+i%7, peri = 2*(len+wid);
+          addNumberQuestion("B", "Perimeter", "A rectangle is " + len + " cm long and " + wid + " cm wide. Find its perimeter.", peri, " cm", "Perimeter = 2(" + len + " + " + wid + ") = " + peri + " cm.", "ความยาวรอบรูป = 2(" + len + " + " + wid + ") = " + peri + " ซม.", i);
+        } else if (kind === 1) {
+          var base = 12+2*i, height = 5+i%6, triArea = base*height/2;
+          addNumberQuestion("B", "Area", "A triangle has base " + base + " cm and height " + height + " cm. Find its area.", triArea, " cm²", "Area = 1/2 × " + base + " × " + height + " = " + triArea + " cm².", "พื้นที่ = 1/2 × " + base + " × " + height + " = " + triArea + " ตร.ซม.", i);
+        } else if (kind === 2) {
+          var l = 4+i%6, w = 3+i%5, h = 2+i%4, vol = l*w*h;
+          addNumberQuestion("B", "Volume", "A cuboid measures " + l + " cm by " + w + " cm by " + h + " cm. Find its volume.", vol, " cm³", "Volume = " + l + " × " + w + " × " + h + " = " + vol + " cm³.", "ปริมาตร = " + l + " × " + w + " × " + h + " = " + vol + " ลบ.ซม.", i);
+        } else if (kind === 3) {
+          var angle = 42+i*3, supplement = 180-angle;
+          addNumberQuestion("B", "Angles", "One angle on a straight line is " + angle + "°. Find the adjacent angle.", supplement, "°", "Angles on a straight line total 180°, so 180 - " + angle + " = " + supplement + "°.", "มุมบนเส้นตรงรวม 180° ดังนั้น 180 - " + angle + " = " + supplement + "°", i);
+        } else {
+          var side = 5+i, sqArea = side*side;
+          addNumberQuestion("B", "Area", "A square has side length " + side + " cm. Find its area.", sqArea, " cm²", "Area = " + side + " × " + side + " = " + sqArea + " cm².", "พื้นที่สี่เหลี่ยมจัตุรัส = " + side + " × " + side + " = " + sqArea + " ตร.ซม.", i);
+        }
+
+        if (kind === 0) {
+          var mean = 12+i, first = mean-4;
+          addNumberQuestion("C", "Mean", "Find the mean of " + first + ", " + (first+2) + ", " + (first+4) + ", " + (first+6) + ", and " + (first+8) + ".", mean, "", "These equally spaced numbers are centred at " + mean + ", so their mean is " + mean + ".", "ข้อมูลเรียงห่างเท่ากันและมีค่าตรงกลางเป็น " + mean + " ค่าเฉลี่ยจึงเท่ากับ " + mean, i);
+        } else if (kind === 1) {
+          var limit = 80+i*5, mult = 4+i%5, count = Math.floor(limit/mult);
+          addNumberQuestion("C", "Counting", "How many positive integers from 1 to " + limit + " are divisible by " + mult + "?", count, "", "Compute the whole-number quotient: " + limit + " ÷ " + mult + " gives " + count + " complete multiples.", "นำ " + limit + " หารด้วย " + mult + " แล้วนับเฉพาะจำนวนเต็ม ได้พหุคูณทั้งหมด " + count + " จำนวน", i);
+        } else if (kind === 2) {
+          var people = 5+i%7, pairs = people*(people-1)/2;
+          addNumberQuestion("C", "Counting pairs", "Each pair among " + people + " people shakes hands once. How many handshakes occur?", pairs, "", "The number of pairs is " + people + " × " + (people-1) + " ÷ 2 = " + pairs + ".", "จำนวนคู่เท่ากับ " + people + " × " + (people-1) + " ÷ 2 = " + pairs, i);
+        } else if (kind === 3) {
+          var digits = 4+i%4, arrangements = digits*(digits-1);
+          addNumberQuestion("C", "Arrangements", "Using " + digits + " different nonzero digits, how many two-digit numbers can be formed without repetition?", arrangements, "", "There are " + digits + " choices for the tens digit and " + (digits-1) + " for the units digit: " + arrangements + ".", "หลักสิบเลือกได้ " + digits + " วิธี หลักหน่วยเหลือ " + (digits-1) + " วิธี รวม " + arrangements + " จำนวน", i);
+        } else {
+          var oldMean = 20+i, totalValues = 6, totalSum = oldMean*totalValues;
+          addNumberQuestion("C", "Data", "The mean of " + totalValues + " numbers is " + oldMean + ". What is their total?", totalSum, "", "Total = mean × number of values = " + oldMean + " × " + totalValues + " = " + totalSum + ".", "ผลรวม = ค่าเฉลี่ย × จำนวนข้อมูล = " + oldMean + " × " + totalValues + " = " + totalSum, i);
+        }
+
+        if (kind === 0) {
+          var start = 2+i, step = 3+i%5, next = start+4*step;
+          addNumberQuestion("D", "Sequences", "Find the next term: " + start + ", " + (start+step) + ", " + (start+2*step) + ", " + (start+3*step) + ", ...", next, "", "The sequence increases by " + step + " each time, so the next term is " + next + ".", "ลำดับเพิ่มครั้งละ " + step + " พจน์ถัดไปจึงเป็น " + next, i);
+        } else if (kind === 1) {
+          var workers = 4+i%5, days = 6+i%6, doubleWorkers = workers*2, halfDays = days/2;
+          if (days % 2 !== 0) { days += 1; halfDays = days/2; }
+          addNumberQuestion("D", "Rates", workers + " workers finish a job in " + days + " days. At the same rate, how many days will " + doubleWorkers + " workers need?", halfDays, " days", "Doubling the workers halves the time: " + days + " ÷ 2 = " + halfDays + " days.", "เมื่อจำนวนคนงานเพิ่มเป็นสองเท่า เวลาจะลดครึ่งหนึ่ง: " + days + " ÷ 2 = " + halfDays + " วัน", i);
+        } else if (kind === 2) {
+          var cubeN = 3+i%5, noPaint = Math.pow(cubeN-2,3);
+          addNumberQuestion("D", "Painted cube", "A " + cubeN + " × " + cubeN + " × " + cubeN + " cube is painted outside. How many unit cubes have no painted face?", noPaint, "", "The unpainted inner cube has side " + (cubeN-2) + ", so the count is " + (cubeN-2) + "³ = " + noPaint + ".", "ส่วนที่ไม่ติดสีเป็นลูกบาศก์ด้านยาว " + (cubeN-2) + " จึงมี " + (cubeN-2) + "³ = " + noPaint + " ลูก", i);
+        } else if (kind === 3) {
+          var totalBalls = 12+i, blue = 3+i%5, notBlue = totalBalls-blue;
+          addNumberQuestion("D", "Probability", "A bag has " + totalBalls + " balls, of which " + blue + " are blue. How many balls are not blue?", notBlue, "", "Subtract the blue balls: " + totalBalls + " - " + blue + " = " + notBlue + ".", "นำจำนวนทั้งหมดลบลูกสีน้ำเงิน: " + totalBalls + " - " + blue + " = " + notBlue, i);
+        } else {
+          var original = 300+i*25, increase = original*20/100, newPrice = original+increase;
+          addNumberQuestion("D", "Percentage", "A price of " + original + " baht increases by 20%. What is the new price?", newPrice, " baht", "The increase is " + original + " × 20% = " + increase + ". New price = " + newPrice + " baht.", "เพิ่มขึ้น " + original + " × 20% = " + increase + " บาท ราคาใหม่เท่ากับ " + newPrice + " บาท", i);
+        }
+      }
+
+      var coachProblems = [
+        {
+          title:"Mission 1 · Path inside a field",
+          question:"A rectangular field is 25 m long and 16 m wide. A path 1 m wide is built inside the field along all four sides. Find the area of the path. Show all steps and explain your reasoning.",
+          answer:"78", unit:"m", numbers:["25","16","400","23","14","322","78"],
+          words:["area","rectangle","inner","path","subtract","therefore"],
+          hintEn:"The path is on both sides of each dimension. What are the length and width of the inner rectangle?",
+          hintTh:"ทางเดินอยู่ทั้งสองด้านของแต่ละมิติ ลองหาความยาวและความกว้างของสี่เหลี่ยมด้านในก่อน",
+          solutionEn:"Outer area = 25 × 16 = 400 m². The inner rectangle is (25 - 2) m by (16 - 2) m, or 23 m by 14 m. Inner area = 23 × 14 = 322 m². Therefore, path area = 400 - 322 = 78 m².",
+          solutionTh:"พื้นที่ทั้งหมด = 25 × 16 = 400 ตร.ม. เมื่อทางเดินกว้างด้านละ 1 เมตร สี่เหลี่ยมด้านในจึงยาว 23 เมตรและกว้าง 14 เมตร มีพื้นที่ 322 ตร.ม. ดังนั้นพื้นที่ทางเดิน = 400 - 322 = 78 ตร.ม."
+        },
+        {
+          title:"Mission 2 · Handshake logic",
+          question:"At a meeting, each pair of 8 people shakes hands exactly once. How many handshakes occur? Give two different ways to justify your answer.",
+          answer:"28", unit:"", numbers:["8","7","6","5","4","3","2","1","28"],
+          words:["pair","choose","method","count","divide","therefore"],
+          hintEn:"Try counting 7 + 6 + 5 + ... and also choosing a pair from 8 people.",
+          hintTh:"ลองนับแบบ 7 + 6 + 5 + ... และอีกวิธีคือเลือกคนหนึ่งคู่จากทั้งหมด 8 คน",
+          solutionEn:"Method 1: Count 7 + 6 + 5 + 4 + 3 + 2 + 1 = 28. Method 2: Choose a pair from 8 people: 8 × 7 ÷ 2 = 28. We divide by 2 because each pair would otherwise be counted twice. Therefore, 28 handshakes occur.",
+          solutionTh:"วิธีที่ 1 บวก 7 + 6 + 5 + 4 + 3 + 2 + 1 = 28 วิธีที่ 2 เลือกคนหนึ่งคู่จาก 8 คน ได้ 8 × 7 ÷ 2 = 28 ต้องหาร 2 เพราะแต่ละคู่ถูกนับซ้ำสองครั้ง"
+        },
+        {
+          title:"Mission 3 · Staircase exploration",
+          question:"A child climbs a staircase by taking either 1 step or 2 steps at a time. Find the number of ways to climb 1, 2, 3, 4, 5, 6, and 7 steps. Describe the pattern and explain why it works.",
+          answer:"21", unit:"", numbers:["1","2","3","5","8","13","21"],
+          words:["pattern","previous","sum","last","move","because"],
+          hintEn:"Separate all paths by their last move: a 1-step move or a 2-step move.",
+          hintTh:"แยกเส้นทางตามก้าวสุดท้ายว่าเป็นการก้าว 1 ขั้นหรือ 2 ขั้น",
+          solutionEn:"The numbers of ways are 1, 2, 3, 5, 8, 13, and 21. To reach step n, the last move is either 1 step from n - 1 or 2 steps from n - 2. These cases do not overlap, so W(n) = W(n - 1) + W(n - 2). Therefore, there are 21 ways for 7 steps.",
+          solutionTh:"จำนวนวิธีคือ 1, 2, 3, 5, 8, 13 และ 21 เพราะก้าวสุดท้ายต้องมาจากขั้นก่อนหน้า 1 ขั้นหรือ 2 ขั้น สองกรณีนี้ไม่ซ้ำกัน จึงนำจำนวนวิธีสองพจน์ก่อนหน้ามาบวกกัน"
+        },
+        {
+          title:"Day 2B · Digits and divisibility",
+          question:"Use the digits 0, 3, 5, and 7 exactly once to form the greatest four-digit number divisible by 5. Explain why your number is the greatest possible.",
+          answer:"7530", unit:"", numbers:["0","3","5","7","7530","7305"], words:["divisible","digit","end","greatest","case","therefore"],
+          hintEn:"A number divisible by 5 must end in 0 or 5. Compare both cases.", hintTh:"จำนวนที่หารด้วย 5 ลงตัวต้องลงท้ายด้วย 0 หรือ 5 ให้เปรียบเทียบสองกรณี",
+          solutionEn:"If the number ends in 0, arrange the remaining digits in descending order to get 7530. If it ends in 5, the greatest possible number is 7305. Since 7530 > 7305, the greatest number is 7530.", solutionTh:"ถ้าลงท้ายด้วย 0 จัดเลขที่เหลือจากมากไปน้อยได้ 7530 ถ้าลงท้ายด้วย 5 จะได้มากสุด 7305 ดังนั้นคำตอบคือ 7530"
+        },
+        {
+          title:"Day 3A · Minimum perimeter",
+          question:"A rectangle has an area of 96 cm². Its side lengths are positive integers. Find the smallest possible perimeter and justify your answer.",
+          answer:"40", unit:"cm", numbers:["96","1","2","3","4","6","8","12","40"], words:["factor","pair","perimeter","smallest","compare","therefore"],
+          hintEn:"List all factor pairs of 96 and compare their perimeters.", hintTh:"เขียนคู่ตัวประกอบของ 96 แล้วเปรียบเทียบเส้นรอบรูป",
+          solutionEn:"The factor pairs are (1,96), (2,48), (3,32), (4,24), (6,16), and (8,12). The pair 8 and 12 gives the least sum, so the least perimeter is 2(8 + 12) = 40 cm.", solutionTh:"คู่ตัวประกอบที่ด้านใกล้กันที่สุดคือ 8 กับ 12 จึงได้เส้นรอบรูปน้อยที่สุด 2(8 + 12) = 40 ซม."
+        },
+        {
+          title:"Day 3B · Forming even numbers",
+          question:"How many three-digit even numbers can be formed using 0, 1, 2, 3, 4, and 5 without repetition? Explain your counting.",
+          answer:"52", unit:"", numbers:["0","2","4","20","32","52"], words:["case","units","hundreds","choice","even","total"],
+          hintEn:"Separate the case where the units digit is 0 from the cases where it is 2 or 4.", hintTh:"แยกกรณีหลักหน่วยเป็น 0 ออกจากกรณีที่เป็น 2 หรือ 4",
+          solutionEn:"If the units digit is 0, there are 5 × 4 = 20 numbers. If it is 2 or 4, there are 2 × 4 × 4 = 32 numbers. Therefore, the total is 20 + 32 = 52.", solutionTh:"ถ้าหลักหน่วยเป็น 0 มี 20 จำนวน ถ้าเป็น 2 หรือ 4 มี 32 จำนวน รวมทั้งหมด 52 จำนวน"
+        },
+        {
+          title:"Day 4A · Avoiding a digit",
+          question:"How many integers from 1 to 100 do not contain the digit 5? Explain your method.",
+          answer:"81", unit:"", numbers:["00","99","9","81","80","100"], words:["digit","choice","exclude","count","add","therefore"],
+          hintEn:"Count 00 through 99 using two positions, then adjust for 00 and 100.", hintTh:"นับตั้งแต่ 00 ถึง 99 ด้วยสองหลัก แล้วปรับกรณี 00 และ 100",
+          solutionEn:"From 00 to 99, each position has 9 choices because 5 is excluded, giving 9 × 9 = 81 strings. Exclude 00 to get 80 positive integers, then include 100. Therefore, the answer is 81.", solutionTh:"แต่ละหลักเลือกได้ 9 ตัวเมื่อไม่ใช้เลข 5 จึงมี 81 แบบ ตัด 00 ออกและเพิ่ม 100 กลับเข้าไป จึงยังเป็น 81"
+        },
+        {
+          title:"Day 4B · Painted cube",
+          question:"A 4 × 4 × 4 cube is made from unit cubes and painted on all six outer faces. How many unit cubes have exactly two painted faces? Explain.",
+          answer:"24", unit:"", numbers:["4","12","2","24"], words:["edge","corner","exclude","painted","cube","therefore"],
+          hintEn:"Exactly two painted faces occur along edges, but not at the corners.", hintTh:"ลูกบาศก์ที่มีสีสองหน้าอยู่ตามสัน แต่ไม่รวมลูกที่มุม",
+          solutionEn:"A cube has 12 edges. On each edge, exclude the 2 corner cubes, leaving 4 - 2 = 2 cubes. Therefore, 12 × 2 = 24 unit cubes have exactly two painted faces.", solutionTh:"ลูกบาศก์มี 12 สัน แต่ละสันเหลือลูกที่ไม่ใช่มุม 2 ลูก จึงมี 12 × 2 = 24 ลูก"
+        },
+        {
+          title:"Day 5A · Grid paths",
+          question:"A robot moves from (0,0) to (4,3), only one unit right or up. How many shortest paths avoid the point (2,1)? Explain each step.",
+          answer:"17", unit:"", numbers:["4","3","7","35","2","1","18","17"], words:["path","right","up","choose","through","subtract"],
+          hintEn:"Count all shortest paths, then subtract the paths that pass through (2,1).", hintTh:"นับเส้นทางสั้นทั้งหมด แล้วลบเส้นทางที่ผ่านจุด (2,1)",
+          solutionEn:"All shortest paths use 4 right and 3 up moves, giving C(7,3) = 35. Paths through (2,1): C(3,1) × C(4,2) = 3 × 6 = 18. Therefore, 35 - 18 = 17 paths avoid the point.", solutionTh:"เส้นทางทั้งหมดมี 35 แบบ เส้นทางที่ผ่าน (2,1) มี 18 แบบ จึงหลบจุดนี้ได้ 35 - 18 = 17 แบบ"
+        },
+        {
+          title:"Day 5B · Father and son",
+          question:"A father is four times as old as his son. In 8 years, he will be twice as old as his son. How old is the son now? Show an equation.",
+          answer:"4", unit:"years", numbers:["4","8","2","16"], words:["let","age","equation","years","solve","therefore"],
+          hintEn:"Let the son's present age be x. Express both ages after 8 years.", hintTh:"ให้อายุปัจจุบันของลูกเป็น x แล้วเขียนอายุของทั้งสองคนในอีก 8 ปี",
+          solutionEn:"Let the son's age be x. The father's age is 4x. In 8 years, 4x + 8 = 2(x + 8). Thus 2x = 8 and x = 4. Therefore, the son is 4 years old.", solutionTh:"ให้ลูกอายุ x ปี พ่ออายุ 4x ปี อีก 8 ปีได้สมการ 4x + 8 = 2(x + 8) แก้ได้ x = 4 ดังนั้นลูกอายุ 4 ปี"
+        },
+        {
+          title:"Day 6A · Counting page digits",
+          question:"Explain how to find the total number of digits used to number the pages of a 120-page book.",
+          answer:"252", unit:"", numbers:["1","9","10","99","100","120","180","63","252"], words:["page","digit","one-digit","two-digit","three-digit","total"],
+          hintEn:"Split the pages into 1-9, 10-99, and 100-120.", hintTh:"แบ่งช่วงหน้าเป็น 1-9, 10-99 และ 100-120",
+          solutionEn:"Pages 1-9 use 9 digits. Pages 10-99 use 90 × 2 = 180 digits. Pages 100-120 use 21 × 3 = 63 digits. Therefore, the total is 9 + 180 + 63 = 252 digits.", solutionTh:"หน้า 1-9 ใช้ 9 หลัก หน้า 10-99 ใช้ 180 หลัก และหน้า 100-120 ใช้ 63 หลัก รวม 252 หลัก"
+        },
+        {
+          title:"Day 6B · Chickens and rabbits",
+          question:"There are 23 chickens and rabbits in a pen. Altogether, they have 62 legs. How many rabbits are there? Explain your reasoning.",
+          answer:"8", unit:"", numbers:["23","62","46","16","2","8"], words:["chicken","rabbit","legs","assume","extra","therefore"],
+          hintEn:"First assume that all 23 animals are chickens. How many extra legs remain?", hintTh:"สมมติก่อนว่าสัตว์ทั้ง 23 ตัวเป็นไก่ แล้วดูว่าเหลือขาเกินมากี่ขา",
+          solutionEn:"If all 23 animals were chickens, there would be 23 × 2 = 46 legs. There are 62 - 46 = 16 extra legs. Each rabbit contributes 2 extra legs, so 16 ÷ 2 = 8. Therefore, there are 8 rabbits.", solutionTh:"ถ้าเป็นไก่ทั้งหมดจะมี 46 ขา แต่มีจริง 62 ขา จึงเกิน 16 ขา กระต่ายแต่ละตัวเพิ่ม 2 ขา จึงมีกระต่าย 8 ตัว"
+        }
+      ];
+
+      var state = {view:"home", vocabList:vocab.slice(), vocabIndex:0, flipped:false, set:"A", index:0, score:0, answered:false, current:null, coachIndex:0, coachAttempt:1, coachFirst:null};
+      function loadStore() {
+        try { return JSON.parse(localStorage.getItem("imsoMathMission") || "{}") || {}; }
+        catch (e) { return {}; }
+      }
+      function saveStore(data) { try { localStorage.setItem("imsoMathMission", JSON.stringify(data)); } catch (e) {} }
+      function showView(name) {
+        state.view = name;
+        root.querySelectorAll("[id^='view-']").forEach(function (el) { el.classList.toggle("hidden", el.id !== "view-" + name); });
+        root.querySelectorAll("[data-view]").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.view === name)); });
+        if (name === "home") renderHome();
+        if (name === "vocab") renderVocab();
+        if (name === "coach") renderCoach();
+      }
+      function renderHome() {
+        var store = loadStore();
+        var known = Object.keys(store.known || {}).length;
+        var history = store.history || [];
+        var best = history.reduce(function (m, x) { return Math.max(m, x.percent); }, 0);
+        root.querySelector("#home-vocab").textContent = known + "/" + vocab.length;
+        root.querySelector("#home-correct").textContent = store.totalCorrect || 0;
+        root.querySelector("#home-best").textContent = best + "%";
+        root.querySelector("#home-xp").textContent = ((store.coach && store.coach.xp) || 0) + " XP";
+        var box = root.querySelector("#history");
+        if (!history.length) { box.className = "history muted"; box.textContent = "ยังไม่มีผลการสอบ"; return; }
+        box.className = "history";
+        box.innerHTML = history.slice(0, 5).map(function (x) {
+          return '<div class="history-row"><span>Set ' + x.set + ' · ' + x.date + '</span><strong>' + x.score + '/' + (x.total || 30) + ' · ' + x.level + '</strong></div>';
+        }).join("");
+      }
+      function filterVocab() {
+        var cat = root.querySelector("#vocab-category").value;
+        state.vocabList = vocab.filter(function (x) { return cat === "all" || x.c === cat; });
+        state.vocabIndex = 0; state.flipped = false; renderVocab();
+      }
+      function renderVocab() {
+        if (!state.vocabList.length) state.vocabList = vocab.slice();
+        var item = state.vocabList[state.vocabIndex % state.vocabList.length];
+        var store = loadStore();
+        var known = store.known || {};
+        root.querySelector("#flash-count").textContent = (state.vocabIndex + 1) + " / " + state.vocabList.length + (known[item.w] ? " · จำได้แล้ว" : "");
+        root.querySelector("#flash-word").textContent = item.w;
+        root.querySelector("#flash-meaning").textContent = item.t;
+        root.querySelector("#flash-example").textContent = item.e;
+        root.querySelector("#flash-meaning").classList.toggle("hidden", !state.flipped);
+        root.querySelector("#flash-example").classList.toggle("hidden", !state.flipped);
+        var count = Object.keys(known).length;
+        root.querySelector("#vocab-progress").style.width = Math.round(count * 100 / vocab.length) + "%";
+      }
+      function nextVocab(knownIt) {
+        var item = state.vocabList[state.vocabIndex % state.vocabList.length];
+        var store = loadStore(); store.known = store.known || {};
+        if (knownIt) store.known[item.w] = true; else delete store.known[item.w];
+        saveStore(store); state.vocabIndex = (state.vocabIndex + 1) % state.vocabList.length; state.flipped = false; renderVocab();
+      }
+      function resetCoach() {
+        state.coachIndex = Number(root.querySelector("#coach-problem").value);
+        state.coachAttempt = 1; state.coachFirst = null;
+        root.querySelector("#coach-answer").value = "";
+        root.querySelector("#coach-feedback").className = "feedback hidden";
+        root.querySelector("#coach-feedback").innerHTML = "";
+        root.querySelector("#coach-image").value = "";
+        root.querySelector("#coach-preview").classList.add("hidden");
+        renderCoach();
+      }
+      function renderCoach() {
+        var p = coachProblems[state.coachIndex];
+        var store = loadStore(); var coach = store.coach || {};
+        root.querySelector("#coach-title").textContent = p.title;
+        root.querySelector("#coach-question").textContent = p.question;
+        root.querySelector("#coach-attempt").textContent = "Attempt " + state.coachAttempt + "/3";
+        root.querySelector("#coach-xp").textContent = coach.xp || 0;
+        root.querySelector("#coach-submit").textContent = state.coachAttempt === 1 ? "ส่งให้ UJ Coach ตรวจ" : "ส่งคำตอบที่แก้ไขแล้ว";
+      }
+      function evaluateCoach(text, p) {
+        var lower = text.toLowerCase(); var score = 0; var notes = [];
+        if (lower.indexOf(p.answer) >= 0) score += 2; else notes.push("Final answer: check the requested value again.");
+        var numberHits = p.numbers.filter(function (n) { return lower.indexOf(n) >= 0; }).length;
+        score += Math.min(3, Math.floor(numberHits / Math.max(1, Math.ceil(p.numbers.length / 3))));
+        if (numberHits < Math.ceil(p.numbers.length / 2)) notes.push("Show more intermediate calculations, not only the final answer.");
+        var wordHits = p.words.filter(function (w) { return lower.indexOf(w) >= 0; }).length;
+        score += Math.min(2, Math.floor(wordHits / 2));
+        if (/\b(because|therefore|so|since)\b/.test(lower)) score += 1; else notes.push("Add a reason using because, so, or therefore.");
+        if (/\b(given|let|method|calculation|area|count|pattern)\b/.test(lower)) score += 1; else notes.push("State your method before calculating.");
+        if (!p.unit || /m\s*(²|2|\^2|square)|square\s+met/.test(lower)) score += 1; else notes.push("Include the correct square unit, m².");
+        score = Math.min(10, score);
+        var language = [];
+        if (/\b(perimeter|area|answer|number)\s+are\b/.test(lower)) language.push("Use ‘is’, not ‘are’, after a singular noun such as area or answer.");
+        if (/\bi\s+am\s+(calculate|find|use)\b/.test(lower)) language.push("Write ‘I calculate/find/use’ or ‘I am calculating/finding/using’.");
+        if (text && text[0] === text[0].toLowerCase() && /[a-z]/.test(text[0])) language.push("Begin the first sentence with a capital letter.");
+        if (!/[.!?]\s*$/.test(text.trim())) language.push("Finish the final sentence with punctuation.");
+        if (!/\btherefore\b/.test(lower)) language.push("A clear final sentence can begin with ‘Therefore, ...’.");
+        return {score:score, notes:notes, language:language};
+      }
+      function submitCoach() {
+        var text = root.querySelector("#coach-answer").value.trim();
+        var box = root.querySelector("#coach-feedback"); var p = coachProblems[state.coachIndex];
+        box.classList.remove("hidden", "wrong");
+        if (text.length < 25) { box.classList.add("wrong"); box.innerHTML = "<strong>ยังสั้นเกินไป</strong><span>กรุณาเขียนอย่างน้อยสูตร การคำนวณ และประโยคสรุป</span>"; return; }
+        var result = evaluateCoach(text, p);
+        if (state.coachFirst === null) state.coachFirst = result.score;
+        var store = loadStore(); store.coach = store.coach || {xp:0, records:{}}; store.coach.records = store.coach.records || {};
+        var key = String(state.coachIndex); var oldBest = (store.coach.records[key] && store.coach.records[key].best) || 0;
+        var improvement = Math.max(0, result.score - oldBest); store.coach.xp = (store.coach.xp || 0) + improvement * 10;
+        store.coach.records[key] = {first:(store.coach.records[key] && store.coach.records[key].first) || result.score, best:Math.max(oldBest, result.score), attempts:state.coachAttempt}; saveStore(store);
+        var html = "<strong>Mathematics & reasoning: " + result.score + "/10</strong>";
+        html += "<span>First attempt: " + state.coachFirst + "/10 · Improvement: +" + Math.max(0, result.score-state.coachFirst) + " · Earned: +" + (improvement*10) + " XP</span>";
+        if (result.notes.length) html += '<div class="explain"><strong>What to improve · จุดที่ควรแก้</strong><span>' + result.notes.join("<br>") + "</span></div>";
+        if (result.language.length) html += '<div class="explain"><strong>English Coach</strong><span>' + result.language.join("<br>") + "</span></div>";
+        if (result.score < 9 && state.coachAttempt < 3) {
+          box.classList.add("wrong"); html += '<div class="explain"><strong>Hint · คำใบ้</strong><span>' + p.hintEn + "</span><span>" + p.hintTh + "</span></div>";
+          state.coachAttempt += 1;
+        } else {
+          html += '<div class="explain"><strong>Model solution · เฉลยตัวอย่าง</strong><span><b>English:</b> ' + p.solutionEn + "</span><span><b>ภาษาไทย:</b> " + p.solutionTh + "</span></div>";
+        }
+        box.innerHTML = html; renderCoach();
+      }
+      function submissionPrompt() {
+        var p = coachProblems[state.coachIndex]; var answer = root.querySelector("#coach-answer").value.trim();
+        return "UJ Math Quest - Written Challenge\n" +
+          "Mission: " + p.title + "\n" +
+          "Attempt: " + state.coachAttempt + "/3\n\n" +
+          "Question:\n" + p.question + "\n\n" +
+          (answer ? "Student's typed solution:\n" + answer : "Student's solution is attached as an image. Please transcribe it before grading.") + "\n\n" +
+          "Please grade this solution out of 10: understanding 2, method 2, steps 2, calculation 2, reasoning/conclusion/unit 2. Separate mathematics feedback from English corrections. If this is attempt 1 or 2, give a focused hint but do not reveal the full model solution. Return: score, points by category, English corrections, Thai explanation, one next action, and confidence in reading the handwriting if an image is attached.";
+      }
+      function sendCoachToChat() {
+        var prompt = submissionPrompt(); var box = root.querySelector("#coach-feedback");
+        if (window.openai && typeof window.openai.sendFollowUpMessage === "function") {
+          window.openai.sendFollowUpMessage({prompt:prompt, title:"ส่งคำตอบให้ AI ตรวจ"});
+        } else {
+          copySubmission();
+          box.classList.remove("hidden"); box.innerHTML = "<strong>คัดลอกใบส่งตรวจแล้ว</strong><span>กลับไปที่แชต วางข้อความ และแนบภาพวิธีทำถ้ามี</span>";
+        }
+      }
+      function copySubmission() {
+        var prompt = submissionPrompt(); var box = root.querySelector("#coach-feedback");
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(prompt).catch(function () {});
+        box.classList.remove("hidden");
+        box.innerHTML = "<strong>ใบส่งตรวจพร้อมแล้ว</strong><span>กดแนบภาพในแชตนี้ แล้ววางใบส่งตรวจที่คัดลอกไว้</span><div class=\"explain\"><span>" + prompt.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/\n/g,"<br>") + "</span></div>";
+      }
+      function saveExternalScore() {
+        var select = root.querySelector("#external-score");
+        if (select.value === "") return;
+        var score = Number(select.value); var store = loadStore(); store.coach = store.coach || {xp:0, records:{}}; store.coach.records = store.coach.records || {};
+        var key = String(state.coachIndex); var record = store.coach.records[key] || {first:score,best:0,attempts:0};
+        var previousBest = record.best || 0; var gain = Math.max(0, score-previousBest);
+        record.first = record.attempts ? record.first : score; record.best = Math.max(previousBest,score); record.attempts = Math.max(record.attempts || 0,state.coachAttempt);
+        store.coach.records[key]=record; store.coach.xp=(store.coach.xp||0)+gain*10; saveStore(store);
+        var box=root.querySelector("#coach-feedback"); box.classList.remove("hidden","wrong");
+        box.innerHTML="<strong>บันทึกคะแนนแล้ว: "+score+"/10</strong><span>Best: "+record.best+"/10 · Improvement XP: +"+(gain*10)+"</span>";
+        select.value=""; renderCoach();
+      }
+      function startQuiz() {
+        state.set = root.querySelector("#set-select").value; state.index = 0; state.score = 0; state.answered = false;
+        root.querySelector("#quiz-setup").classList.add("hidden"); root.querySelector("#quiz-result").classList.add("hidden"); root.querySelector("#quiz-play").classList.remove("hidden");
+        renderQuestion();
+      }
+      function renderQuestion() {
+        var item = sets[state.set][state.index]; state.current = item; state.answered = false;
+        var total = sets[state.set].length;
+        root.querySelector("#quiz-label").textContent = "Set " + state.set + " · Question " + (state.index + 1) + "/" + total;
+        root.querySelector("#quiz-score").textContent = "Score: " + state.score;
+        root.querySelector("#quiz-progress").style.width = Math.round(state.index * 100 / total) + "%";
+        root.querySelector("#question-topic").textContent = item.topic;
+        root.querySelector("#question-text").textContent = item.text;
+        root.querySelector("#feedback").className = "feedback hidden";
+        root.querySelector("#feedback").innerHTML = "";
+        root.querySelector("#show-solution").classList.add("hidden"); root.querySelector("#next-question").classList.add("hidden");
+        var list = root.querySelector("#option-list"); list.innerHTML = "";
+        item.options.forEach(function (opt, i) {
+          var b = document.createElement("button"); b.type = "button"; b.textContent = String.fromCharCode(65 + i) + ". " + opt;
+          b.addEventListener("click", function () { answerQuestion(i); }); list.appendChild(b);
+        });
+      }
+      function answerQuestion(choice) {
+        if (state.answered) return; state.answered = true;
+        var item = state.current; var correct = choice === item.answer; var feedback = root.querySelector("#feedback");
+        root.querySelectorAll("#option-list button").forEach(function (b, i) { b.disabled = true; if (i === item.answer) b.setAttribute("aria-pressed", "true"); });
+        feedback.classList.remove("hidden");
+        if (correct) {
+          state.score += 1; feedback.classList.remove("wrong"); feedback.innerHTML = "<strong>Correct! ✓</strong><span>เก่งมาก ตอบถูกแล้ว</span>";
+          root.querySelector("#quiz-score").textContent = "Score: " + state.score;
+        } else {
+          feedback.classList.add("wrong"); feedback.innerHTML = "<strong>Not correct yet</strong><span>ยังไม่ถูก กดดูเฉลยเพื่อเรียนรู้วิธีคิด</span>";
+          root.querySelector("#show-solution").classList.remove("hidden");
+        }
+        root.querySelector("#next-question").classList.remove("hidden");
+      }
+      function showSolution() {
+        var item = state.current; var feedback = root.querySelector("#feedback");
+        feedback.innerHTML += '<div class="explain"><strong>Correct answer: ' + item.options[item.answer] + '</strong><span><b>English:</b> ' + item.en + '</span><span><b>ภาษาไทย:</b> ' + item.th + '</span></div>';
+        root.querySelector("#show-solution").classList.add("hidden");
+      }
+      function nextQuestion() {
+        if (state.index < sets[state.set].length - 1) { state.index += 1; renderQuestion(); } else finishQuiz();
+      }
+      function levelFor(percent) {
+        if (percent >= 85) return {level:"ดีมาก", advice:"พร้อมมากแล้ว ให้ทบทวนเฉพาะข้อที่พลาดและศัพท์คำสั่งก่อนสอบ"};
+        if (percent >= 70) return {level:"ดี", advice:"พื้นฐานดี ควรทบทวนข้อที่ผิดและลองทำชุดอื่นเพื่อเพิ่มความแม่นยำ"};
+        if (percent >= 50) return {level:"พอใช้", advice:"ควรกลับไปท่องศัพท์และฝึกหัวข้อที่ตอบผิด แล้วทำชุดเดิมซ้ำ"};
+        return {level:"ต้องปรับปรุง", advice:"เริ่มจากโหมดท่องศัพท์ จากนั้นฝึกทีละหัวข้อโดยอ่านเฉลยทั้งภาษาไทยและอังกฤษ"};
+      }
+      function finishQuiz() {
+        var total = sets[state.set].length; var percent = Math.round(state.score * 100 / total); var result = levelFor(percent); var store = loadStore();
+        store.totalCorrect = (store.totalCorrect || 0) + state.score; store.history = store.history || [];
+        store.history.unshift({set:state.set, score:state.score, total:total, percent:percent, level:result.level, date:new Date().toLocaleDateString("th-TH")}); store.history = store.history.slice(0, 12); saveStore(store);
+        root.querySelector("#quiz-play").classList.add("hidden"); root.querySelector("#quiz-result").classList.remove("hidden");
+        root.querySelector("#result-score").textContent = state.score + "/" + total; root.querySelector("#result-percent").textContent = percent + "%"; root.querySelector("#result-level").textContent = result.level; root.querySelector("#result-advice").textContent = result.advice;
+      }
+      root.querySelectorAll("[data-view]").forEach(function (b) { b.addEventListener("click", function () { showView(b.dataset.view); }); });
+      root.querySelectorAll("[data-go]").forEach(function (b) { b.addEventListener("click", function () { showView(b.dataset.go); }); });
+      root.querySelector("#vocab-category").addEventListener("change", filterVocab);
+      root.querySelector("#vocab-shuffle").addEventListener("click", function () { state.vocabList.sort(function () { return Math.random() - 0.5; }); state.vocabIndex = 0; state.flipped = false; renderVocab(); });
+      root.querySelector("#flash-card").addEventListener("click", function () { state.flipped = !state.flipped; renderVocab(); });
+      root.querySelector("#vocab-review").addEventListener("click", function () { nextVocab(false); });
+      root.querySelector("#vocab-know").addEventListener("click", function () { nextVocab(true); });
+      root.querySelector("#start-quiz").addEventListener("click", startQuiz);
+      root.querySelector("#show-solution").addEventListener("click", showSolution);
+      root.querySelector("#next-question").addEventListener("click", nextQuestion);
+      root.querySelector("#retry-quiz").addEventListener("click", startQuiz);
+      root.querySelector("#choose-set").addEventListener("click", function () { root.querySelector("#quiz-result").classList.add("hidden"); root.querySelector("#quiz-setup").classList.remove("hidden"); });
+      root.querySelector("#coach-problem").addEventListener("change", resetCoach);
+      root.querySelector("#coach-submit").addEventListener("click", submitCoach);
+      root.querySelector("#coach-chat").addEventListener("click", sendCoachToChat);
+      root.querySelector("#coach-copy").addEventListener("click", copySubmission);
+      root.querySelector("#save-external-score").addEventListener("click", saveExternalScore);
+      root.querySelector("#coach-reset").addEventListener("click", resetCoach);
+      root.querySelector("#coach-image").addEventListener("change", function (event) {
+        var file = event.target.files && event.target.files[0]; var preview = root.querySelector("#coach-preview");
+        if (!file) { preview.classList.add("hidden"); return; }
+        preview.src = URL.createObjectURL(file); preview.classList.remove("hidden");
+      });
+      renderHome(); renderVocab(); renderCoach();
+    })();
+  </script>
+</div>
+</main>
+</body>
+</html>
